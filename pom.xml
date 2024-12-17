@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -27,7 +27,7 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>23</java.version>
+		<java.version>17</java.version> <!-- Alterado para versão 17 -->
 	</properties>
 	<dependencies>
 		<dependency>
@@ -44,7 +44,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.24</version>
+			<version>1.18.24</version> <!-- Versão corrigida do Lombok -->
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -57,7 +57,6 @@
 			<artifactId>json</artifactId>
 			<version>20210307</version>
 		</dependency>
-
 	</dependencies>
 
 	<build>
@@ -71,10 +70,11 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
+							<version>1.18.24</version> <!-- Adicionando versão do Lombok no plugin -->
 						</path>
 					</annotationProcessorPaths>
-					<source>17</source>
-					<target>17</target>
+					<source>17</source> <!-- Ajustado para versão 17 -->
+					<target>17</target> <!-- Ajustado para versão 17 -->
 				</configuration>
 			</plugin>
 			<plugin>

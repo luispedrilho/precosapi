@@ -21,7 +21,7 @@ public class AppConfig {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**") // Permite todas as rotas da API
-						.allowedOrigins("http://localhost:3000") // Permite chamadas do frontend
+						.allowedOrigins("https://luispedrilho.github.io") // Permite chamadas do frontend
 						.allowedMethods("GET", "POST", "PUT", "DELETE") // Métodos HTTP permitidos
 						.allowedHeaders("*") // Permite todos os headers
 						.allowCredentials(true); // Permite envio de credenciais (opcional)

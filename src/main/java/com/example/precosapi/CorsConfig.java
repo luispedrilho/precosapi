@@ -10,7 +10,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         // Permitir CORS para o front-end específico (substitua com a URL do seu front-end)
         registry.addMapping("/**")
-                .allowedOrigins("https://luispedrilho.github.io") // Adicione a URL do seu front-end aqui
+                .allowedOrigins("https://luispedrilho.github.io/precosapi-frontend/") // Adicione a URL do seu front-end aqui
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*")
                 .allowCredentials(true);

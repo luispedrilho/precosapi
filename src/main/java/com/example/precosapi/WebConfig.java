@@ -5,12 +5,12 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class CorsConfig implements WebMvcConfigurer {
+public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        // Permitir CORS para o front-end específico (substitua com a URL do seu front-end)
+        // Permitir CORS para o front-end específico
         registry.addMapping("/**")
-                .allowedOrigins("https://luispedrilho.github.io") // Adicione a URL do seu front-end aqui
+                .allowedOrigins("https://luispedrilho.github.io") // URL do seu front-end
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*")
                 .allowCredentials(true);

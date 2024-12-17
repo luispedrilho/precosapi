@@ -1,6 +1,12 @@
 # Usar a imagem oficial do OpenJDK como base
 FROM openjdk:17-jdk-slim
 
+# Usar a imagem oficial do OpenJDK como base
+FROM openjdk:17-jdk-slim
+
+# Instalar o Maven
+RUN apt-get update && apt-get install -y maven
+
 # Diretório de trabalho dentro do container
 WORKDIR /app
 

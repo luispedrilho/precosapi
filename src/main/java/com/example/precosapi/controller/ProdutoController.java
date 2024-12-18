@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/precos")
-@CrossOrigin(origins = "http://localhost:3000") // Permite requisições do front-end
+// Permite requisições do front-end
+@CrossOrigin(origins = {"http://localhost:3000", "https://luispedrilho.github.io/"})
 public class ProdutoController {
 
     @Autowired

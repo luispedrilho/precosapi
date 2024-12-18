@@ -1,6 +1,7 @@
 package com.example.precosapi.service;
 
 import com.example.precosapi.dto.PrecoDTO;
+import com.example.precosapi.dto.ItemResponseDTO;
 import com.example.precosapi.model.Item;
 import com.example.precosapi.model.SearchResponse;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalDouble;
-import java.util.stream.Collectors;
 
 @Service
 public class MercadoLivreService {
@@ -23,8 +23,52 @@ public class MercadoLivreService {
         this.objectMapper = objectMapper;
     }
 
+    // Método que retorna os dados do primeiro item de catálogo
+    public ItemResponseDTO getFirstItemDetails(String keyword) {
+        String url = "https://api.mercadolibre.com/sites/MLB/search?q=" + keyword + "&category=MLB1055&condition=new";  // MLB1055 é o ID da categoria "Smartphones"
+        String jsonResponse = restTemplate.getForObject(url, String.class);
+
+        try {
+            SearchResponse response = objectMapper.readValue(jsonResponse, SearchResponse.class);
+            if (response != null && response.getResults() != null && !response.getResults().isEmpty()) {
+                // Pegando o primeiro item
+                Item firstItem = response.getResults().get(0);
+
+                // Calculando o preço médio
+                double averagePrice = calculateAveragePrice(response.getResults());
+
+                // Retornando as informações no formato do DTO
+                return new ItemResponseDTO(
+                        firstItem.getTitle(),
+                        firstItem.getThumbnail(),
+                        averagePrice,
+                        firstItem.getSeller().getNickname()  // Nome do vendedor
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null; // Retorna null caso não encontre resultados
+    }
+
+    // Método para calcular o preço médio dos itens
+    private double calculateAveragePrice(List<Item> items) {
+        OptionalDouble avgPriceOpt = items.stream()
+                .mapToDouble(item -> {
+                    try {
+                        return Double.parseDouble(item.getPrice());
+                    } catch (NumberFormatException e) {
+                        return 0.0;  // Retorna 0 em caso de erro
+                    }
+                })
+                .average();
+        return avgPriceOpt.orElse(0.0); // Retorna o preço médio ou 0 se não for possível calcular
+    }
+
+    // Método que retorna a lista de preços calculados
     public PrecoDTO buscarPrecosCalculados(String keyword) {
-        String url = "https://api.mercadolibre.com/sites/MLB/search?q=" + keyword + "&category=MLB1055&condition=new";  // MLB1051 é o ID da categoria "Smartphones"
+        String url = "https://api.mercadolibre.com/sites/MLB/search?q=" + keyword + "&category=MLB1055&condition=new";  // MLB1055 é o ID da categoria "Smartphones"
         String jsonResponse = restTemplate.getForObject(url, String.class);
 
         try {
@@ -49,14 +93,13 @@ public class MercadoLivreService {
         return new PrecoDTO();
     }
 
+    // Método para calcular preços mínimo, máximo e médio
     private PrecoDTO calcularPrecos(List<Item> items) {
-        // Calcula preços mínimo, máximo e médio
         OptionalDouble minPriceOpt = items.stream()
                 .mapToDouble(item -> {
                     try {
                         return Double.parseDouble(item.getPrice());
                     } catch (NumberFormatException e) {
-                        System.out.println("Erro ao converter preço para número: " + item.getPrice());
                         return 0.0;  // Retorna 0 em caso de erro
                     }
                 })
@@ -66,7 +109,6 @@ public class MercadoLivreService {
                     try {
                         return Double.parseDouble(item.getPrice());
                     } catch (NumberFormatException e) {
-                        System.out.println("Erro ao converter preço para número: " + item.getPrice());
                         return 0.0;  // Retorna 0 em caso de erro
                     }
                 })
@@ -76,7 +118,6 @@ public class MercadoLivreService {
                     try {
                         return Double.parseDouble(item.getPrice());
                     } catch (NumberFormatException e) {
-                        System.out.println("Erro ao converter preço para número: " + item.getPrice());
                         return 0.0;  // Retorna 0 em caso de erro
                     }
                 })
@@ -87,7 +128,6 @@ public class MercadoLivreService {
         double averagePrice = avgPriceOpt.orElse(0.0);
         double suggestedPrice = (lowerPrice + higherPrice + averagePrice) / 3;
 
-        // Contar itens entre os intervalos
         int countLowerToAverage = (int) items.stream()
                 .filter(item -> {
                     double price = Double.parseDouble(item.getPrice());

@@ -17,6 +17,10 @@ public class PrecoDTO {
         this.suggestedPrice = suggestedPrice;
     }
 
+    public PrecoDTO() {
+
+    }
+
     // Getters e Setters
     public double getLowerPrice() { return lowerPrice; }
     public int getLowerPriceCount() { return lowerPriceCount; }

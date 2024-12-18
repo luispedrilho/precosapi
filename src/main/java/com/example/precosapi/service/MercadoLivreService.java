@@ -7,8 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalDouble;
+import java.util.stream.Collectors;
 
 @Service
 public class MercadoLivreService {
@@ -22,31 +24,62 @@ public class MercadoLivreService {
     }
 
     public PrecoDTO buscarPrecosCalculados(String keyword) {
-        String url = "https://api.mercadolibre.com/sites/MLB/search?q=" + keyword;
+        String url = "https://api.mercadolibre.com/sites/MLB/search?q=" + keyword + "&category=MLB1055&condition=new";  // MLB1051 é o ID da categoria "Smartphones"
         String jsonResponse = restTemplate.getForObject(url, String.class);
 
         try {
             SearchResponse response = objectMapper.readValue(jsonResponse, SearchResponse.class);
             if (response != null && response.getResults() != null) {
-                return calcularPrecos(response.getResults());
+                // Filtra os itens que têm catalog_product_id não nulo e não vazio
+                List<Item> filteredItems = new ArrayList<>();
+                for (Item item : response.getResults()) {
+                    if (item.getCatalogProductId() != null && !item.getCatalogProductId().trim().isEmpty()) {
+                        filteredItems.add(item);
+                    }
+                }
+
+                return calcularPrecos(filteredItems);
+            } else {
+                System.out.println("Não há resultados ou resposta inválida.");  // Log se não houver dados
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return new PrecoDTO(0.0, 0, 0.0, 0.0, 0, 0.0);
+        return new PrecoDTO();
     }
 
     private PrecoDTO calcularPrecos(List<Item> items) {
         // Calcula preços mínimo, máximo e médio
         OptionalDouble minPriceOpt = items.stream()
-                .mapToDouble(item -> Double.parseDouble(item.getPrice()))
+                .mapToDouble(item -> {
+                    try {
+                        return Double.parseDouble(item.getPrice());
+                    } catch (NumberFormatException e) {
+                        System.out.println("Erro ao converter preço para número: " + item.getPrice());
+                        return 0.0;  // Retorna 0 em caso de erro
+                    }
+                })
                 .min();
         OptionalDouble maxPriceOpt = items.stream()
-                .mapToDouble(item -> Double.parseDouble(item.getPrice()))
+                .mapToDouble(item -> {
+                    try {
+                        return Double.parseDouble(item.getPrice());
+                    } catch (NumberFormatException e) {
+                        System.out.println("Erro ao converter preço para número: " + item.getPrice());
+                        return 0.0;  // Retorna 0 em caso de erro
+                    }
+                })
                 .max();
         OptionalDouble avgPriceOpt = items.stream()
-                .mapToDouble(item -> Double.parseDouble(item.getPrice()))
+                .mapToDouble(item -> {
+                    try {
+                        return Double.parseDouble(item.getPrice());
+                    } catch (NumberFormatException e) {
+                        System.out.println("Erro ao converter preço para número: " + item.getPrice());
+                        return 0.0;  // Retorna 0 em caso de erro
+                    }
+                })
                 .average();
 
         double lowerPrice = minPriceOpt.orElse(0.0);

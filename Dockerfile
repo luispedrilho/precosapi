@@ -25,5 +25,7 @@ RUN mvn clean install
 # Expor a porta
 EXPOSE 8080
 
+ENV SPRING_PROFILES_ACTIVE=prod
+
 # Iniciar a aplicação
 CMD ["java", "-jar", "target/precosapi-0.0.1-SNAPSHOT.jar"]

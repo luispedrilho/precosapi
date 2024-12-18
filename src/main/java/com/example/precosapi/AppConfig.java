@@ -1,5 +1,6 @@
 package com.example.precosapi;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +10,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class AppConfig {
+
+	@Value("${frontend.url}")
+	private String frontUrl;  // Variável que irá armazenar a URL do frontend
 
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder builder) {
@@ -20,11 +24,12 @@ public class AppConfig {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**") // Permite todas as rotas da API
-						.allowedOrigins("https://luispedrilho.github.io") // Permite chamadas do frontend
-						.allowedMethods("GET", "POST", "PUT", "DELETE") // Métodos HTTP permitidos
-						.allowedHeaders("*") // Permite todos os headers
-						.allowCredentials(true); // Permite envio de credenciais (opcional)
+				// Usando a variável frontUrl injetada para configurar o allowedOrigins
+				registry.addMapping("/**")
+						.allowedOrigins(frontUrl) // Usa a URL do frontend definida nos arquivos de propriedades
+						.allowedMethods("GET", "POST", "PUT", "DELETE")
+						.allowedHeaders("*")
+						.allowCredentials(true);
 			}
 		};
 	}

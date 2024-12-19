@@ -1,12 +1,14 @@
 package com.example.precosapi.dto;
 
 public class ItemResponseDTO {
+    private String catalogProductId; // Adicionando o catalog_product_id
     private String title;
     private String imageUrl;
     private double averagePrice;
     private String sellerName;
 
-    public ItemResponseDTO(String title, String imageUrl, double averagePrice, String sellerName) {
+    public ItemResponseDTO(String catalogProductId, String title, String imageUrl, double averagePrice, String sellerName) {
+        this.catalogProductId = catalogProductId;
         this.title = title;
         this.imageUrl = imageUrl;
         this.averagePrice = averagePrice;
@@ -14,6 +16,14 @@ public class ItemResponseDTO {
     }
 
     // Getters e Setters
+    public String getCatalogProductId() {
+        return catalogProductId;
+    }
+
+    public void setCatalogProductId(String catalogProductId) {
+        this.catalogProductId = catalogProductId;
+    }
+
     public String getTitle() {
         return title;
     }

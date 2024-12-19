@@ -1,7 +1,7 @@
 package com.example.precosapi.service;
 
-import com.example.precosapi.dto.PrecoDTO;
 import com.example.precosapi.dto.ItemResponseDTO;
+import com.example.precosapi.dto.PrecoDTO;
 import com.example.precosapi.model.Item;
 import com.example.precosapi.model.SearchResponse;
 import org.springframework.stereotype.Service;
@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalDouble;
+import java.util.stream.Collectors;
 
 @Service
 public class MercadoLivreService {
@@ -39,6 +40,7 @@ public class MercadoLivreService {
 
                 // Retornando as informações no formato do DTO
                 return new ItemResponseDTO(
+                        firstItem.getCatalogProductId(), // Agora inclui o catalog_product_id
                         firstItem.getTitle(),
                         firstItem.getThumbnail(),
                         averagePrice,
@@ -143,5 +145,38 @@ public class MercadoLivreService {
                 .count();
 
         return new PrecoDTO(lowerPrice, countLowerToAverage, averagePrice, higherPrice, countAverageToHigher, suggestedPrice);
+    }
+
+    // Novo método que retorna todos os catalog_product_id com os detalhes, incluindo catalog_product_id no retorno
+    public List<ItemResponseDTO> getCatalogProductIds(String keyword) {
+        String url = "https://api.mercadolibre.com/sites/MLB/search?q=" + keyword + "&category=MLB1055&condition=new";  // MLB1055 é o ID da categoria "Smartphones"
+        String jsonResponse = restTemplate.getForObject(url, String.class);
+
+        try {
+            SearchResponse response = objectMapper.readValue(jsonResponse, SearchResponse.class);
+            if (response != null && response.getResults() != null) {
+                List<Item> items = response.getResults();
+
+                // Extrair e consolidar as informações
+                return items.stream()
+                        .filter(item -> item.getCatalogProductId() != null && !item.getCatalogProductId().trim().isEmpty())
+                        .distinct()
+                        .map(item -> {
+                            double averagePrice = calculateAveragePrice(items);
+                            return new ItemResponseDTO(
+                                    item.getCatalogProductId(), // Incluindo o catalog_product_id
+                                    item.getTitle(),
+                                    item.getThumbnail(),
+                                    averagePrice,
+                                    item.getSeller().getNickname()
+                            );
+                        })
+                        .collect(Collectors.toList());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new ArrayList<>();
     }
 }

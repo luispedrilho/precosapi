@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 public class MercadoLivreController {
 
@@ -26,5 +28,12 @@ public class MercadoLivreController {
     @GetMapping("/first-item")
     public ItemResponseDTO getFirstItem(@RequestParam String keyword) {
         return mercadoLivreService.getFirstItemDetails(keyword);
+    }
+
+    // Novo endpoint /catalog_product que retorna os catalog_product_id com os detalhes
+    @CrossOrigin(origins = {"http://localhost:3000", "https://luispedrilho.github.io/"})
+    @GetMapping("/catalog_product")
+    public List<ItemResponseDTO> getCatalogProductIds(@RequestParam String keyword) {
+        return mercadoLivreService.getCatalogProductIds(keyword);
     }
 }
